@@ -6,6 +6,7 @@ int main ()
     List list = {};
 
     ListCtor (&list, LIST_INITIAL_CAPACITY);
+    ListDump (&list);
 
     ListPushHeadTail (&list, 10, TAIL);
     ListDump (&list);
@@ -13,60 +14,58 @@ int main ()
     ListDump (&list);
     ListPushHeadTail (&list, 20, TAIL);
     ListDump (&list);
-    
-    ListDelete (&list, 3);
+    ListInsert (&list, 99, 2);
     ListDump (&list);
 
-    // list.data[2].value = 10;
-    // list.data[3].value = 15;
-    // list.data[4].value = 25;
-    // list.data[9].value = 100;
-
+    printf ("Found elem %d\n", ListFind (&list, 3));
 
     ListDtor (&list);
 }
 
 
-ListElem* ListDelete (List* self, int pos)
+int ListDelete (List* self, int elem_id)
 {
-    ListElem* elem_to_del = self->data + pos;
+    ListElem* elem_to_del = self->data + elem_id;
 
     if (self->size == LIST_INITIAL_SIZE + 1) // One elem in List case
     {
-        self->tail = self->data;
-        self->head = self->data;
+        self->tail = 0;
+        self->head = 0;
     }
-    else if (elem_to_del == self->tail) //Deleting tail
+    else if (elem_id == self->tail) //Deleting tail
     {
-        self->tail = self->tail->prev;
-        self->tail->next = self->data;
+        self->tail = self->data[self->tail].prev;
+        self->data[self->tail].next = 0;
     }
-    else if (elem_to_del == self->head) //Deleting head
+    else if (elem_id == self->head) //Deleting head
     {
-        self->head = self->head->next;
-        self->head->prev = self->data;
+        self->head = self->data[self->head].next;
+        self->data[self->head].prev = 0;
     }
     else
     {
-        ListElem* prev_elem = elem_to_del->prev;
-        ListElem* next_elem = elem_to_del->next;
+        ListElem* prev_elem = self->data + elem_to_del->prev;
+        ListElem* next_elem = self->data + elem_to_del->next;
 
-        prev_elem->next = next_elem;
-        next_elem->prev = prev_elem;
+        prev_elem->next = elem_to_del->next;
+        next_elem->prev = elem_to_del->prev;
     }
 
     // Pushing freed elem to the beginning of free-data-list
-    self->free->prev = elem_to_del;
+    self->data[self->free].prev = elem_id;
+
     elem_to_del->value = -1;
     elem_to_del->next = self->free;
-    elem_to_del->prev = self->data;
-    self->free = elem_to_del;
+    elem_to_del->prev = 0;
 
-    return elem_to_del;
+    self->free = elem_id;
+    self->size--;
+
+    return elem_id;
 }
 
 
-ListElem* ListPushHeadTail (List* self, elem_t value, int push_mode)
+int ListPushHeadTail (List* self, elem_t value, int push_mode)
 {
     assert (self);
 
@@ -75,48 +74,87 @@ ListElem* ListPushHeadTail (List* self, elem_t value, int push_mode)
         printf ("\nList is full, fucking fuck!\n\n");
         return 0;
     }
+
     // Finding free space
-    ListElem* inserted_elem = self->free;
-    self->free = self->free->next;
+    int new_elem_id = self->free;
+    ListElem* inserted_elem = self->data + new_elem_id;
+    self->free = self->data[self->free].next;
 
     // Giving default values to ListElem
     inserted_elem->value = value;
-    inserted_elem->next  = self->data;
-    inserted_elem->prev  = self->data;
+    inserted_elem->next  = 0;
+    inserted_elem->prev  = 0;
 
     if (self->size == LIST_INITIAL_SIZE)
     {
-        self->head = inserted_elem;
-        self->tail = inserted_elem;
+        self->head = new_elem_id;
+        self->tail = new_elem_id;
         self->size++;
-        return inserted_elem;
+        return new_elem_id;
     }
 
     if (push_mode == TAIL)
     {
         printf ("Inserting to tail\n");
         inserted_elem->prev = self->tail;
-        self->tail->next = inserted_elem;
-        self->tail = inserted_elem;
+        self->data[self->tail].next = new_elem_id;
+        self->tail = new_elem_id;
     }
 
     if (push_mode == HEAD)
     {
         printf ("Inserting to head\n");
         inserted_elem->next = self->head;
-        self->head->prev = inserted_elem;
-        self->head = inserted_elem;
+        self->data[self->head].prev = new_elem_id;
+        self->head = new_elem_id;
     }
 
     self->size++;
 
-    return inserted_elem;
+    return new_elem_id;
 }
 
 
-ListElem* ListInsert (List* self, elem_t value, int pos, int physical_indx = NOT_STATED)
+int ListInsert (List* self, elem_t value, int elem_id, int physical_indx)
 {
+    if (physical_indx == NOT_STATED) physical_indx = ListFind (self, elem_id);
 
+    if (physical_indx == self->tail) return ListPushHeadTail (self, value, TAIL);
+    if (physical_indx == self->head) return ListPushHeadTail (self, value, HEAD);
+    
+    // Finding free space
+    int new_elem_id = self->free;
+    ListElem* inserted_elem = self->data + new_elem_id;
+    self->free = self->data[self->free].next;
+
+    // Changing connections of neighbours
+    int right_neighbour_id = self->data[physical_indx].next;
+    self->data[right_neighbour_id].prev = new_elem_id;
+    self->data[physical_indx].next = new_elem_id;
+    
+    // Writing inserted elem data
+    self->data[new_elem_id].value = value;
+    self->data[new_elem_id].prev  = physical_indx;
+    self->data[new_elem_id].next  = right_neighbour_id;
+    
+    return new_elem_id;
+}
+
+
+int ListFind (List* self, int id)
+{
+    printf ("Why don't you just save the address, fucker?\n");
+
+    if (id > self->size - 1) return -1;
+
+    int cur_elem_id = self->head;
+
+    for (int i = 0; i < id - 1; i++)
+    {
+        cur_elem_id = self->data[cur_elem_id].next;
+    }
+
+    return cur_elem_id;
 }
 
 
@@ -127,7 +165,7 @@ void _ListDump (List* self, const char* /*filename[]*/, const char func_name[], 
     printf ("Call of function ListDump at %s, line %d:\n", func_name, line);
 
     printf ("Head: %d, Tail: %d, Free: %d\n",
-            self->head->value, self->tail->value, self->free->value);
+            self->head, self->tail, self->free);
     printf ("Size: %d\nCapacity: %d\n", self->size, self->capacity);
 
     // Output of the list element and their connections
@@ -136,9 +174,9 @@ void _ListDump (List* self, const char* /*filename[]*/, const char func_name[], 
     {
         printf ("%d:\t %d \t %d \t %d\n",
                 elem_id,
-                self->data[elem_id].prev->value,
+                self->data[elem_id].prev,
                 self->data[elem_id].value,
-                self->data[elem_id].next->value);
+                self->data[elem_id].next);
     }
 
 
@@ -155,25 +193,25 @@ void ListCtor (List* self, int capacity)
     self->capacity = capacity;
 
     // Handling the beginning and the end of list
-    self->data[0].next = self->data;
-    self->data[0].prev = self->data;
+    self->data[0].next = 0;
+    self->data[0].prev = 0;
 
-    self->data[capacity - 1].next  = self->data;
+    self->data[capacity - 1].next  = 0;
     self->data[capacity - 1].value = -1;
-    self->data[capacity - 1].prev  = self->data + capacity - 2;
+    self->data[capacity - 1].prev  = capacity - 2;
 
     // Making connections with free elems
     for (int elem_id = 1; elem_id < capacity - 1; elem_id++)
     {
         self->data[elem_id].value = -1;
-        self->data[elem_id].next = self->data + elem_id + 1;
-        self->data[elem_id].prev = self->data + elem_id - 1;
+        self->data[elem_id].next = elem_id + 1;
+        self->data[elem_id].prev = elem_id - 1;
     }
     
     // Initialising the rest of stuff
-    self->head = self->data;
-    self->tail = self->data;
-    self->free = self->data + 1;
+    self->head = 0;
+    self->tail = 0;
+    self->free = 1;
 }
 
 
@@ -182,8 +220,8 @@ void ListDtor (List* self)
     FREE(self->data);
     self->size = -1;
 
-    self->head = nullptr;
-    self->tail = nullptr;
-    self->free = nullptr;
+    self->head = 0;
+    self->tail = 0;
+    self->free = 0;
 }
 

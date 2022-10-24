@@ -47,8 +47,8 @@ enum PUSH_TYPE
 struct ListElem
 {
     elem_t value;
-    ListElem* prev;
-    ListElem* next;
+    int prev;
+    int next;
 };
 
 
@@ -58,17 +58,19 @@ struct List
     int size;
     int capacity;
 
-    ListElem* head;
-    ListElem* tail;
-    ListElem* free;
+    int head;
+    int tail;
+    int free;
     
 };
 
-ListElem* ListPushHeadTail (List* self, elem_t value, int push_mode);
+int ListPushHeadTail (List* self, elem_t value, int push_mode);
 
-ListElem* ListInsert (List* self, elem_t value, int pos, int physical_indx);
+int ListInsert (List* self, elem_t value, int elem_id, int physical_indx = NOT_STATED);
 
-ListElem* ListDelete (List* self, int pos);
+int ListFind (List* self, int id);
+
+int ListDelete (List* self, int elem_id);
 
 void ListCtor (List* self, int capacity);
 
