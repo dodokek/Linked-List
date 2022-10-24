@@ -20,11 +20,27 @@
 
 //----------------------------------------------
 
+enum ListFlags
+{
+    NOT_STATED = -1,
+};
 
-//----------------------------------------------
+enum Sizes
+{
+    LIST_INITIAL_CAPACITY = 10,
+    LIST_INITIAL_SIZE = 1,
+};
 
-const int LIST_INITIAL_SIZE = 10;
+enum ERR_CODES
+{
+    LIST_IS_FULL = 0,
+};
 
+enum PUSH_TYPE
+{
+    TAIL,
+    HEAD
+};
 //----------------------------------------------
 
 
@@ -48,6 +64,11 @@ struct List
     
 };
 
+ListElem* ListPushHeadTail (List* self, elem_t value, int push_mode);
+
+ListElem* ListInsert (List* self, elem_t value, int pos, int physical_indx);
+
+ListElem* ListDelete (List* self, int pos);
 
 void ListCtor (List* self, int capacity);
 
