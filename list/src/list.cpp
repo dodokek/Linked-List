@@ -16,11 +16,57 @@ int main ()
     ListDump (&list);
     ListInsert (&list, 99, 2);
     ListDump (&list);
+    ListResize (&list, 12);
+    ListDump (&list);
 
-    printf ("Found elem %d\n", ListFind (&list, 3));
 
     ListDtor (&list);
 }
+
+
+void ListResize (List* self, int new_capacity)
+{
+    if (new_capacity < self->capacity) printf ("Can't shrink the list, data may corrupt.\n");
+    
+    // Allocating space for the new list
+    ListElem* new_data = (ListElem*) calloc (new_capacity, sizeof (ListElem));
+    assert (new_data);
+    
+    // Rewriting every element in linear order
+    int cur_elem_id = self->head;
+
+    for (int i = 1; i < self->size + 1; i++)
+    {
+        *(new_data + i) = self->data[cur_elem_id];
+        cur_elem_id = self->data[cur_elem_id].next;
+    }
+
+    for (int elem_id = self->size + 1; elem_id < new_capacity; elem_id++)
+    {
+        new_data[elem_id].value = -1;
+    }
+
+    for (int i = 1; i < new_capacity - 1; i++)
+    {
+        new_data[i].prev = i - 1;
+        new_data[i].next = i + 1;
+    }
+
+    new_data[new_capacity - 1].next = 0;
+    new_data[new_capacity - 1].prev = new_capacity - 2;
+    
+    // Rewriting list info
+    self->capacity = new_capacity;
+    self->free = cur_elem_id;
+    self->head = 1;
+    self->tail = self->size;
+
+    free (self->data);
+    self->data = new_data;
+
+    return;
+}
+
 
 
 int ListDelete (List* self, int elem_id)
@@ -124,7 +170,6 @@ int ListInsert (List* self, elem_t value, int elem_id, int physical_indx)
     
     // Finding free space
     int new_elem_id = self->free;
-    ListElem* inserted_elem = self->data + new_elem_id;
     self->free = self->data[self->free].next;
 
     // Changing connections of neighbours
@@ -212,6 +257,8 @@ void ListCtor (List* self, int capacity)
     self->head = 0;
     self->tail = 0;
     self->free = 1;
+
+    self->linear = true;
 }
 
 
@@ -223,5 +270,6 @@ void ListDtor (List* self)
     self->head = 0;
     self->tail = 0;
     self->free = 0;
+    self->linear = false;
 }
 

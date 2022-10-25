@@ -62,11 +62,14 @@ struct List
     int tail;
     int free;
     
+    bool linear;
 };
 
 int ListPushHeadTail (List* self, elem_t value, int push_mode);
 
 int ListInsert (List* self, elem_t value, int elem_id, int physical_indx = NOT_STATED);
+
+void ListResize (List* self, int new_capacity);
 
 int ListFind (List* self, int id);
 
