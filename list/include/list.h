@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "config.h"
+#include "error_handler.h"
 
 
 //----------------------------------------------
@@ -31,20 +32,21 @@ enum Sizes
     LIST_INITIAL_SIZE = 1,
 };
 
-enum ERR_CODES
-{
-    LIST_IS_FULL = 0,
-};
-
-enum PUSH_TYPE
+enum PushType
 {
     TAIL,
     HEAD
 };
+
+enum VerificationMode
+{
+    LOUD,
+    QUIET
+};
 //----------------------------------------------
 
 
-struct ListElem
+struct node
 {
     elem_t value;
     int prev;
@@ -54,7 +56,7 @@ struct ListElem
 
 struct List
 {
-    ListElem* data;
+    node* data;
     int size;
     int capacity;
 
@@ -65,13 +67,23 @@ struct List
     bool linear;
 };
 
-int ListPushHeadTail (List* self, elem_t value, int push_mode);
+int ListPushBack (List* self, elem_t value);
 
-int ListInsert (List* self, elem_t value, int elem_id, int physical_indx = NOT_STATED);
+int ListPushFront (List* self, elem_t value);
+
+node* InitNewElem (List* self, int* new_elem_id, elem_t value);
+
+void ListVerificate (List* self);
+
+int HandleZeroSize (List* self, int new_elem_id);
+
+int ListInsertRight (List* self, elem_t value, int elem_id, int real_pos = NOT_STATED);
+
+int ListInsertLeft (List* self, elem_t value, int elem_id, int real_pos = NOT_STATED);
 
 void ListResize (List* self, int new_capacity);
 
-int ListFind (List* self, int id);
+int GetRealPos (List* self, int id);
 
 int ListDelete (List* self, int elem_id);
 
