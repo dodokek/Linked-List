@@ -19,6 +19,7 @@ int main ()
     ListDump (&list);
     ListResize (&list, 12);
     ListDump (&list);
+    ListInsertRight (&list, 300, 2);
 
     DumpList (&list);
 
@@ -310,38 +311,38 @@ void DumpList (List* self)
         compound  =  true;
         newrank   =  true;
         rankdir   =  LR;
+
     )";
     _print (header);
 
-    // Drawing invisible connections
-    _print ("0");
 
+    // Filling the value of each node
+    for (int i = 0; i < self->capacity; i++) 
+    {
+        _print ( "node%d[shape=record, label=\" real address: %d | <p>prev: %d | value: %d | <n>next: %d\"] \n \n",
+                i, i, self->data[i].prev, self->data[i].value, self->data[i].next);
+    }
+
+    // Making invisible connections
+    _print ("node0");
     for (int i = 1; i < self->capacity; i++)
     {
-        _print ("->%d", i);
+        _print ("->node%d", i);
     }
     _print ("[style=invis, weight=1, minlen=\"1.5\"]\n");
 
-    _print ("Free->%d", self->free);
-    _print ("Head->%d", self->head);
-    _print ("Tail->%d", self->tail);
+    // Service data
+    _print ("Free->node%d\n", self->free);
+    _print ("Head->node%d\n", self->head);
+    _print ("Tail->node%d\n", self->tail);
 
-    
-   for (int i = 0; i < self->capacity; i++) {
-        // Creating subgraph for each node
-        _print ( "\tsubgraph node%d { \n"
-                        "       label = %d;  \n"
-                        "       fontsize= 20; \n", i, i);
-
-        // Filling the value of node
-        _print ( "\t\t%d [shape=record, label=\"<p>prev: %d | value: %d | <n>next: %d\"] \n} \n",
-                i, self->data[i].prev, self->data[i].value, self->data[i].next);
-
-        // Drawing connections with other nodes
-
-        _print ("\t\t %d:p->%d", i, self->data[i].prev);
-        _print ("\t\t %d:n->%d", i, self->data[i].next);
+    // Making connections
+    for (int i = 1; i < self->capacity; i++) 
+    {
+        _print ("node%d:p -> node%d \n", i, self->data[i].prev);
+        _print ("node%d:n -> node%d \n", i, self->data[i].next);
     }
+
     _print ("}\n");
 
     #undef _print
