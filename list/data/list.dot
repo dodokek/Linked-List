@@ -1,0 +1,68 @@
+
+    digraph g {
+        dpi      = 100
+        compound  =  true;
+        newrank   =  true;
+        rankdir   =  LR;
+    0->1->2->3->4->5->6->7->8->9->10->11[style=invis, weight=1, minlen="1.5"]
+Free->0Head->1Tail->4	subgraph node0 { 
+       label = 0;  
+       fontsize= 20; 
+		0 [shape=record, label="<p>prev: 0 | value: 0 | <n>next: 0"] 
+} 
+		 0:p->0		 0:n->0	subgraph node1 { 
+       label = 1;  
+       fontsize= 20; 
+		1 [shape=record, label="<p>prev: 0 | value: 10 | <n>next: 2"] 
+} 
+		 1:p->0		 1:n->2	subgraph node2 { 
+       label = 2;  
+       fontsize= 20; 
+		2 [shape=record, label="<p>prev: 1 | value: 15 | <n>next: 3"] 
+} 
+		 2:p->1		 2:n->3	subgraph node3 { 
+       label = 3;  
+       fontsize= 20; 
+		3 [shape=record, label="<p>prev: 2 | value: 99 | <n>next: 4"] 
+} 
+		 3:p->2		 3:n->4	subgraph node4 { 
+       label = 4;  
+       fontsize= 20; 
+		4 [shape=record, label="<p>prev: 3 | value: 20 | <n>next: 5"] 
+} 
+		 4:p->3		 4:n->5	subgraph node5 { 
+       label = 5;  
+       fontsize= 20; 
+		5 [shape=record, label="<p>prev: 4 | value: -1 | <n>next: 6"] 
+} 
+		 5:p->4		 5:n->6	subgraph node6 { 
+       label = 6;  
+       fontsize= 20; 
+		6 [shape=record, label="<p>prev: 5 | value: -1 | <n>next: 7"] 
+} 
+		 6:p->5		 6:n->7	subgraph node7 { 
+       label = 7;  
+       fontsize= 20; 
+		7 [shape=record, label="<p>prev: 6 | value: -1 | <n>next: 8"] 
+} 
+		 7:p->6		 7:n->8	subgraph node8 { 
+       label = 8;  
+       fontsize= 20; 
+		8 [shape=record, label="<p>prev: 7 | value: -1 | <n>next: 9"] 
+} 
+		 8:p->7		 8:n->9	subgraph node9 { 
+       label = 9;  
+       fontsize= 20; 
+		9 [shape=record, label="<p>prev: 8 | value: -1 | <n>next: 10"] 
+} 
+		 9:p->8		 9:n->10	subgraph node10 { 
+       label = 10;  
+       fontsize= 20; 
+		10 [shape=record, label="<p>prev: 9 | value: -1 | <n>next: 11"] 
+} 
+		 10:p->9		 10:n->11	subgraph node11 { 
+       label = 11;  
+       fontsize= 20; 
+		11 [shape=record, label="<p>prev: 10 | value: -1 | <n>next: 0"] 
+} 
+		 11:p->10		 11:n->0}

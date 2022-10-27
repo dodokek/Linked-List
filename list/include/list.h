@@ -11,6 +11,7 @@
 
 #include "config.h"
 #include "error_handler.h"
+#include "fileUtils.h"
 
 
 //----------------------------------------------
@@ -93,4 +94,5 @@ void ListDtor (List* self);
 
 void _ListDump (List* self, const char* /*filename[]*/, const char func_name[], const int line);
 
+void DumpList (List* self);
 #endif

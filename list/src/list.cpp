@@ -4,6 +4,7 @@
 int main ()
 {
     List list = {};
+    FILE* log_file = get_file ("../data/log.html", "rw");
 
     ListCtor (&list, LIST_INITIAL_CAPACITY);
     ListDump (&list);
@@ -19,53 +20,13 @@ int main ()
     ListResize (&list, 12);
     ListDump (&list);
 
+    DumpList (&list);
 
+    fclose (log_file);
     ListDtor (&list);
 }
 
 
-void ListResize (List* self, int new_capacity)
-{
-    if (new_capacity < self->capacity) printf ("Can't shrink the list, data may corrupt.\n");
-    
-    // Allocating space for the new list
-    node* new_data = (node*) calloc (new_capacity, sizeof (node));
-    assert (new_data);
-    
-    // Rewriting every element in linear order
-    int cur_elem_id = self->head;
-
-    for (int i = 1; i < self->size + 1; i++)
-    {
-        *(new_data + i) = self->data[cur_elem_id];
-        cur_elem_id = self->data[cur_elem_id].next;
-    }
-
-    for (int elem_id = self->size + 1; elem_id < new_capacity; elem_id++)
-    {
-        new_data[elem_id].value = -1;
-    }
-
-    for (int i = 1; i < new_capacity - 1; i++)
-    {
-        new_data[i].prev = i - 1;
-        new_data[i].next = i + 1;
-    }
-
-    new_data[new_capacity - 1].next = 0;
-    new_data[new_capacity - 1].prev = new_capacity - 2;
-    
-    // Rewriting list info
-    self->capacity = new_capacity;
-    self->free = cur_elem_id;
-    self->head = 1;
-    self->tail = self->size;
-
-    free (self->data);
-    self->data = new_data;
-
-    return;
-}
 
 
 
@@ -163,35 +124,6 @@ int ListPushBack (List* self, elem_t value)
 }
 
 
-node* InitNewElem (List* self, int* new_elem_id, elem_t value)
-{
-    // Finding free space
-    *new_elem_id = self->free;
-    node* new_elem = self->data + *new_elem_id;
-    self->free = self->data[self->free].next;
-
-    // Giving default values to node
-    new_elem->value = value;
-    new_elem->next  = 0;
-    new_elem->prev  = 0;  
-
-    return new_elem;
-}
-
-
-int HandleZeroSize (List* self, int new_elem_id)
-{
-    if (self->size == LIST_INITIAL_SIZE)
-    {
-        self->head = new_elem_id;
-        self->tail = new_elem_id;
-        self->size++;
-        return 1;
-    }
-    return 0;
-}
-
-
 int ListInsertRight (List* self, elem_t value, int elem_id, int real_pos)
 {
     if (real_pos == NOT_STATED) real_pos = GetRealPos (self, elem_id);
@@ -221,6 +153,79 @@ int ListInsertLeft (List* self, elem_t value, int elem_id, int real_pos)
     if (real_pos == self->head) return ListPushFront (self, value);
 
     return ListInsertRight (self, value, elem_id - 1, real_pos);
+}
+
+
+node* InitNewElem (List* self, int* new_elem_id, elem_t value)
+{
+    // Finding free space
+    *new_elem_id = self->free;
+    node* new_elem = self->data + *new_elem_id;
+    self->free = self->data[self->free].next;
+
+    // Giving default values to node
+    new_elem->value = value;
+    new_elem->next  = 0;
+    new_elem->prev  = 0;  
+
+    return new_elem;
+}
+
+
+int HandleZeroSize (List* self, int new_elem_id)
+{
+    if (self->size == LIST_INITIAL_SIZE)
+    {
+        self->head = new_elem_id;
+        self->tail = new_elem_id;
+        self->size++;
+        return 1;
+    }
+    return 0;
+}
+
+
+void ListResize (List* self, int new_capacity)
+{
+    if (new_capacity < self->capacity) printf ("Can't shrink the list, data may corrupt.\n");
+    
+    // Allocating space for the new list
+    node* new_data = (node*) calloc (new_capacity, sizeof (node));
+    assert (new_data);
+    
+    // Rewriting every element in linear order
+    int cur_elem_id = self->head;
+
+    for (int i = 1; i < self->size + 1; i++)
+    {
+        *(new_data + i) = self->data[cur_elem_id];
+        cur_elem_id = self->data[cur_elem_id].next;
+    }
+
+    for (int elem_id = self->size + 1; elem_id < new_capacity; elem_id++)
+    {
+        new_data[elem_id].value = -1;
+    }
+
+    for (int i = 1; i < new_capacity - 1; i++)
+    {
+        new_data[i].prev = i - 1;
+        new_data[i].next = i + 1;
+    }
+
+    new_data[new_capacity - 1].next = 0;
+    new_data[new_capacity - 1].prev = new_capacity - 2;
+    
+    // Rewriting list info
+    self->capacity = new_capacity;
+    self->free = cur_elem_id;
+    self->head = 1;
+    self->tail = self->size;
+
+    free (self->data);
+    self->data = new_data;
+
+    return;
 }
 
 
@@ -292,6 +297,59 @@ void ListVerificate (List* self)
 }
 
 
+void DumpList (List* self)
+{
+    #define _print(...) fprintf (dot_file, __VA_ARGS__)
+
+    FILE* dot_file = get_file ("data/list.dot", "w+");
+    
+    // Writing header info
+    const char header[] = R"(
+    digraph g {
+        dpi      = 100
+        compound  =  true;
+        newrank   =  true;
+        rankdir   =  LR;
+    )";
+    _print (header);
+
+    // Drawing invisible connections
+    _print ("0");
+
+    for (int i = 1; i < self->capacity; i++)
+    {
+        _print ("->%d", i);
+    }
+    _print ("[style=invis, weight=1, minlen=\"1.5\"]\n");
+
+    _print ("Free->%d", self->free);
+    _print ("Head->%d", self->head);
+    _print ("Tail->%d", self->tail);
+
+    
+   for (int i = 0; i < self->capacity; i++) {
+        // Creating subgraph for each node
+        _print ( "\tsubgraph node%d { \n"
+                        "       label = %d;  \n"
+                        "       fontsize= 20; \n", i, i);
+
+        // Filling the value of node
+        _print ( "\t\t%d [shape=record, label=\"<p>prev: %d | value: %d | <n>next: %d\"] \n} \n",
+                i, self->data[i].prev, self->data[i].value, self->data[i].next);
+
+        // Drawing connections with other nodes
+
+        _print ("\t\t %d:p->%d", i, self->data[i].prev);
+        _print ("\t\t %d:n->%d", i, self->data[i].next);
+    }
+    _print ("}\n");
+
+    #undef _print
+
+    fclose (dot_file);
+    system ("dot -Tpng data/list.dot -o data/result.png");
+}
+
 void ListCtor (List* self, int capacity)
 {
     // Initializing the array of elems
@@ -335,4 +393,5 @@ void ListDtor (List* self)
     self->free = 0;
     self->linear = false;
 }
+
 
