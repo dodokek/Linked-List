@@ -1,6 +1,8 @@
 
 #include "list.h"
 
+static int DUMP_NUMBER = 0;
+
 int main ()
 {
     List list = {};
@@ -10,22 +12,29 @@ int main ()
     ListCtor (&list, LIST_INITIAL_CAPACITY);
     ListDump (&list);
 
-    ListPushBack (&list, 10);
+    // $ sign for printing additional info in log
+    
+    $ListPushBack (&list, 10);
     ListDump (&list);
-    ListPushBack (&list, 15);
+    
+    $ListPushBack (&list, 15);
     ListDump (&list);
-    ListPushBack (&list, 20);
+    
+    $ListPushBack (&list, 20);
     ListDump (&list);
-    ListInsertRight (&list, 99, 2);
+    
+    $ListInsertRight (&list, 99, 2);
     ListDump (&list);
-    ListResize (&list, 12);
+    
+    $ListResize (&list, 12);
     ListDump (&list);
-    ListInsertRight (&list, 300, 3);
+    
+    $ListInsertRight (&list, 300, 3);
     ListDump (&list);
-    ListLinearize (&list);
+    
+    $ListLinearize (&list);
     ListDump (&list);
 
-    
 
     fclose (log_file);
     ListDtor (&list);
@@ -100,6 +109,7 @@ int ListPushFront (List* list, elem_t value)
     list->head = new_elem_id;
 
     list->size++;
+    list->linear = false;
 
     return new_elem_id;
 }
@@ -123,7 +133,6 @@ int ListPushBack (List* list, elem_t value)
     list->tail = new_elem_id;
 
     list->size++;
-    list->linear = false;
 
     return new_elem_id;
 }
@@ -339,7 +348,7 @@ void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], 
 
     
 
-    $print ("<hr>\n<pre>\n");
+    $print ("<pre>\n");
 
     $print ("\n--------------------------------------\n");
     
@@ -360,7 +369,7 @@ void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], 
                 list->data[elem_id].next);
     }
 
-    $print ("\n--------------------------------------\n</hr>");
+    $print ("\n--------------------------------------\n");
 
     DrawList (list, log_file);
 }
@@ -476,6 +485,7 @@ void DrawList (List* list, FILE* log_file)
 
     system (dot_cmd);
     $print (img_tag);
+    $print ("\n<hr>\n");
 
     DUMP_NUMBER++;
 }

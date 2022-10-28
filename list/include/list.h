@@ -14,15 +14,38 @@
 #include "fileUtils.h"
 
 //----------------------------------------------
-// Fucking global variable!
-
-int DUMP_NUMBER = 0;
-
-//----------------------------------------------
 
 #define FREE(x) free(x), x = nullptr
 
 #define ListDump(X) _ListDump(X, __FILE__, __PRETTY_FUNCTION__, __LINE__, log_file)
+
+#define $ListPushBack(ptr, val);               \
+    $print ("Pushing to tail value %d", val); \
+    ListPushBack(ptr, val);
+
+#define $ListPushFront(ptr, val)               \
+    $print ("Pushing to front value %d", val); \
+    ListPushFront(ptr, val);
+
+#define $ListInsertRight(ptr, val, id)               \
+    $print ("Inserting value %d after id %d", val, id); \
+    ListInsertRight(ptr, val, id)
+
+#define $ListInsertLeft(ptr, val, id)               \
+    $print ("Inserting value %d before id %d", val, id); \
+    ListInsertLeft(ptr, val, id)
+
+#define $ListResize(ptr, val)               \
+    $print ("Resizing list to size %d", val); \
+    ListResize(ptr, val);
+
+#define $ListPushFront(ptr, val)               \
+    $print ("Pushing to front value %d", val); \
+    ListPushFront(ptr, val);
+
+#define $ListLinearize(ptr)               \
+    $print ("Linearizing the list"); \
+    ListLinearize(ptr);
 
 #define $print(...) fprintf (log_file, __VA_ARGS__)
 
