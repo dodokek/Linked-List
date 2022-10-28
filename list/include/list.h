@@ -14,7 +14,6 @@
 
 //----------------------------------------------
 
-#define FREE(x) free(x), x = nullptr
 
 #define ListDump(X) _ListDump(X, __FILE__, __PRETTY_FUNCTION__, __LINE__)
 
@@ -44,36 +43,34 @@ enum PUSH_TYPE
 //----------------------------------------------
 
 
-struct ListElem
+struct node
 {
     elem_t value;
-    ListElem* prev;
-    ListElem* next;
+    node* prev;
+    node* next;
 };
 
 
 struct List
 {
-    ListElem* data;
     int size;
-    int capacity;
 
-    ListElem* head;
-    ListElem* tail;
-    ListElem* free;
-    
+    node* head;
+    node* tail;
 };
 
-ListElem* ListPushHeadTail (List* self, elem_t value, int push_mode);
+node* ListPushHeadTail (List* list, elem_t value, int push_mode);
 
-ListElem* ListInsert (List* self, elem_t value, int pos, int physical_indx);
+node* ListInsert (List* list, elem_t value, int pos, int physical_indx);
 
-ListElem* ListDelete (List* self, int pos);
+node* ListDelete (List* list, int pos);
 
-void ListCtor (List* self, int capacity);
+void ListCtor (List* list, int capacity);
 
-void ListDtor (List* self);
+void ListDtor (List* list);
 
-void _ListDump (List* self, const char* /*filename[]*/, const char func_name[], const int line);
+int ListFind (List* list, int id);
+
+void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], const int line);
 
 #endif
