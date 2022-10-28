@@ -13,9 +13,15 @@ int main ()
     ListDump (&list);
 
     // $ sign for printing additional info in log
+<<<<<<< Updated upstream
 
     ListPushBack (&list, 10);
     ListDump (&list, "Print Kek %s", "bebra");
+=======
+    
+    $ListPushBack (&list, 10);
+    ListDump (&list);
+>>>>>>> Stashed changes
     
     ListPushBack (&list, 15);
     ListDump (&list, "Print Kek %s", "bebra");
@@ -342,8 +348,6 @@ void ListVerificate (List* list, FILE* log_file)
 void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], const int line, FILE* log_file, char* reason, ...)
 {
     ListVerificate (list, log_file);
-
-    
 
     $print ("<pre>\n");
 
