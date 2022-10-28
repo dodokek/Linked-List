@@ -8,7 +8,7 @@
         if (!(X))                           \
         {                                   \
             printf ("Assertion failed!");   \
-            ListVerificate (self);          \
+            ListVerificate (list);          \
         }
 
 

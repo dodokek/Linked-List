@@ -80,31 +80,33 @@ struct List
     bool linear;
 };
 
-int ListPushBack (List* self, elem_t value);
+int ListPushBack (List* list, elem_t value);
 
-int ListPushFront (List* self, elem_t value);
+int ListPushFront (List* list, elem_t value);
 
-node* InitNewElem (List* self, int* new_elem_id, elem_t value);
+node* InitNewElem (List* list, int* new_elem_id, elem_t value);
 
-void ListVerificate (List* self, FILE* log_file);
+void ListVerificate (List* list, FILE* log_file);
 
-int HandleZeroSize (List* self, int new_elem_id);
+int HandleZeroSize (List* list, int new_elem_id);
 
-int ListInsertRight (List* self, elem_t value, int elem_id);
+int ListInsertRight (List* list, elem_t value, int elem_id);
 
-int ListInsertLeft (List* self, elem_t value, int elem_id);
+int ListInsertLeft (List* list, elem_t value, int elem_id);
 
-void ListResize (List* self, int new_capacity);
+void ListResize (List* list, int new_capacity);
 
-int GetRealPos (List* self, int id);
+void ListLinearize (List* list);
 
-int ListDelete (List* self, int elem_id);
+int GetRealPos (List* list, int id);
 
-void ListCtor (List* self, int capacity);
+int ListDelete (List* list, int elem_id);
 
-void ListDtor (List* self);
+void ListCtor (List* list, int capacity);
 
-void _ListDump (List* self, const char* /*filename[]*/, const char func_name[], const int line, FILE* log_file);
+void ListDtor (List* list);
 
-void DrawList (List* self, FILE* log_file);
+void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], const int line, FILE* log_file);
+
+void DrawList (List* list, FILE* log_file);
 #endif

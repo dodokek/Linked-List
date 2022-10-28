@@ -1,16 +1,14 @@
 
     digraph g {
-        dpi      = 100;
+        dpi      = 200;
         fontname = "Comic Sans MS";
         fontsize = 20;
-        compound  =  true;
-        newrank   =  true;
         rankdir   =  TB;
         edge [color = darkgrey, arrowhead = onormal, arrowsize = 1, penwidth = 1.2]
         graph[fillcolor = lightgreen, ranksep = 1.3, nodesep = 0.5,
         style = "rounded, filled",color = green, penwidth = 2]
 
-    InfoNode[shape=record, color="red", width=0.2, style="filled", fillcolor="lightblue", label=" {Linear: 1 | Size: 4 | Capacity: 12}"] 
+    InfoNode[shape=record, color="red", width=0.2, style="filled", fillcolor="lightblue", label=" {Linear: 1 | Size: 6 | Capacity: 12}"] 
  
 node0[shape=record, width=0.2, style="filled", fillcolor="grey", label=" {id: 0 | <p>prev: nill | value: nill | <n>next: nill}"] 
  
@@ -20,11 +18,11 @@ node2[shape=record, width=0.2, style="filled", fillcolor="green", label=" {id: 2
  
 node3[shape=record, width=0.2, style="filled", fillcolor="green", label=" {id: 3 | <p>prev: 2 | value: 99 | <n>next: 4}"] 
  
-node4[shape=record, width=0.2, style="filled", fillcolor="darkgoldenrod1", label=" {id: 4 | <p>prev: 3 | value: 20 | <n>next: 5}"] 
+node4[shape=record, width=0.2, style="filled", fillcolor="green", label=" {id: 4 | <p>prev: 3 | value: 300 | <n>next: 5}"] 
  
-node5[shape=record, width=0.2, style="filled", fillcolor="blue", label=" {id: 5 | <p>prev: FREE | value: POISON | <n>next: FREE}"] 
+node5[shape=record, width=0.2, style="filled", fillcolor="green", label=" {id: 5 | <p>prev: 4 | value: 300 | <n>next: 6}"] 
  
-node6[shape=record, width=0.2, style="filled", fillcolor="blue", label=" {id: 6 | <p>prev: FREE | value: POISON | <n>next: FREE}"] 
+node6[shape=record, width=0.2, style="filled", fillcolor="darkgoldenrod1", label=" {id: 6 | <p>prev: 5 | value: 300 | <n>next: 7}"] 
  
 node7[shape=record, width=0.2, style="filled", fillcolor="blue", label=" {id: 7 | <p>prev: FREE | value: POISON | <n>next: FREE}"] 
  
@@ -37,9 +35,9 @@ node10[shape=record, width=0.2, style="filled", fillcolor="blue", label=" {id: 1
 node11[shape=record, width=0.2, style="filled", fillcolor="blue", label=" {id: 11 | <p>prev: FREE | value: POISON | <n>next: FREE}"] 
  
 { rank = same; node0; node1; node2; node3; node4; node5; node6; node7; node8; node9; node10; node11; }
-Free->node5
+Free->node7
 Head->node1
-Tail->node4
+Tail->node6
 edge[style=invis, constraint = true]
 node0->node1->node2->node3->node4->node5->node6->node7->node8->node9->node10->node11
  edge[style=solid, constraint = false]
@@ -50,7 +48,9 @@ node3:p -> node2
 node3:n -> node4 
 node4:p -> node3 
 node4:n -> node5 
+node5:p -> node4 
 node5:n -> node6 
+node6:p -> node5 
 node6:n -> node7 
 node7:n -> node8 
 node8:n -> node9 
