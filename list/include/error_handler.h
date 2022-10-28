@@ -21,7 +21,7 @@ enum ErrCodes
 };
 
 
-void PutError (int error_id);
+void PutError (int error_id, FILE* log_file);
 
 
 

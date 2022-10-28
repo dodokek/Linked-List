@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#define $print(...) fprintf (LOG_FILE, __VA_ARGS__)
+#define $print(...) fprintf (log_file, __VA_ARGS__)
 
-FILE* LOG_FILE = nullptr;
+void LogList (FILE* log_file);
 
 
 

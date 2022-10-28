@@ -4,7 +4,7 @@
 int main ()
 {
     List list = {};
-    FILE* log_file = get_file ("../data/log.html", "rw");
+    FILE* log_file = get_file ("data/log.html", "w+");
 
     ListCtor (&list, LIST_INITIAL_CAPACITY);
     ListDump (&list);
@@ -19,16 +19,11 @@ int main ()
     ListDump (&list);
     ListResize (&list, 12);
     ListDump (&list);
-    ListInsertRight (&list, 300, 2);
-    ListDump (&list);
-    DumpList (&list);
+    
 
     fclose (log_file);
     ListDtor (&list);
 }
-
-
-
 
 
 int ListDelete (List* self, int elem_id)
@@ -62,7 +57,7 @@ int ListDelete (List* self, int elem_id)
     // Pushing freed elem to the beginning of free-data-list
     self->data[self->free].prev = elem_id;
 
-    elem_to_del->value = -1;
+    elem_to_del->value = POISON_NUM;
     elem_to_del->next = self->free;
     elem_to_del->prev = 0;
 
@@ -125,10 +120,8 @@ int ListPushBack (List* self, elem_t value)
 }
 
 
-int ListInsertRight (List* self, elem_t value, int elem_id, int real_pos)
+int ListInsertRight (List* self, elem_t value, int real_pos)
 {
-    if (real_pos == NOT_STATED) real_pos = GetRealPos (self, elem_id);
-
     if (real_pos == self->tail) return ListPushBack (self, value);
     
     // Finding free space
@@ -149,11 +142,25 @@ int ListInsertRight (List* self, elem_t value, int elem_id, int real_pos)
 }
 
 
-int ListInsertLeft (List* self, elem_t value, int elem_id, int real_pos)
+int ListInsertLeft (List* self, elem_t value, int real_pos)
 {
     if (real_pos == self->head) return ListPushFront (self, value);
 
-    return ListInsertRight (self, value, elem_id - 1, real_pos);
+    // Finding free space
+    int new_elem_id = self->free;
+    self->free = self->data[self->free].next;
+
+    // Changing connections of neighbours
+    int left_neighbour_id = self->data[real_pos].prev;
+    self->data[left_neighbour_id].next = new_elem_id;
+    self->data[real_pos].prev = new_elem_id;
+    
+    // Writing inserted elem data
+    self->data[new_elem_id].value = value;
+    self->data[new_elem_id].next = real_pos;
+    self->data[new_elem_id].prev  = left_neighbour_id;
+    
+    return new_elem_id;
 }
 
 
@@ -205,7 +212,7 @@ void ListResize (List* self, int new_capacity)
 
     for (int elem_id = self->size + 1; elem_id < new_capacity; elem_id++)
     {
-        new_data[elem_id].value = -1;
+        new_data[elem_id].value = POISON_NUM;
     }
 
     for (int i = 1; i < new_capacity - 1; i++)
@@ -218,8 +225,9 @@ void ListResize (List* self, int new_capacity)
     new_data[new_capacity - 1].prev = new_capacity - 2;
     
     // Rewriting list info
+    self->linear = true;
     self->capacity = new_capacity;
-    self->free = self->size;
+    self->free = self->size + 1;
     self->head = 1;
     self->tail = self->size;
 
@@ -246,43 +254,16 @@ int GetRealPos (List* self, int id)
 }
 
 
-void _ListDump (List* self, const char* /*filename[]*/, const char func_name[], const int line)
-{
-    ListVerificate (self);
-
-    printf ("\n--------------------------------------\n");
-    
-    printf ("Call of function ListDump at %s, line %d:\n", func_name, line);
-
-    printf ("Head: %d, Tail: %d, Free: %d\n",
-            self->head, self->tail, self->free);
-    printf ("Size: %d\nCapacity: %d\n", self->size, self->capacity);
-
-    // Output of the list element and their connections
-    printf ("\t prev \t value \t next\n");    
-    for (int elem_id = 0; elem_id < self->capacity; elem_id++)
-    {
-        printf ("%d:\t %d \t %d \t %d\n",
-                elem_id,
-                self->data[elem_id].prev,
-                self->data[elem_id].value,
-                self->data[elem_id].next);
-    }
-
-    printf ("\n--------------------------------------\n");
-}
-
-
-void ListVerificate (List* self)
+void ListVerificate (List* self, FILE* log_file)
 {
     if (!self)
     { 
-        PutError (NULL_PTR);
+        PutError (NULL_PTR, log_file);
         return;
     }
 
-    if (self->size < 0 || self->size > self->capacity) PutError (INVALID_SIZE);
-    if (self-> size == self->capacity) PutError (LIST_IS_FULL);
+    if (self->size < 0 || self->size > self->capacity) PutError (INVALID_SIZE, log_file);
+    if (self-> size == self->capacity) PutError (LIST_IS_FULL, log_file);
 
     for (int i = 1; i < self->size; i++)
     {
@@ -291,13 +272,44 @@ void ListVerificate (List* self)
 
         if (self->data[prev_indx].next != i || self->data[next_indx].prev != i)
         {
-            if (prev_indx != 0 && next_indx != 0) PutError (WRONG_CONNECTIONS);
+            if (prev_indx != 0 && next_indx != 0) PutError (WRONG_CONNECTIONS, log_file);
         }
     }
 }
 
 
-void DumpList (List* self)
+void _ListDump (List* self, const char* /*filename[]*/, const char func_name[], const int line, FILE* log_file)
+{
+    ListVerificate (self, log_file);
+
+    $print ("<hr>\n<pre>\n");
+
+    $print ("\n--------------------------------------\n");
+    
+    $print ("Call of function ListDump at %s, line %d:\n", func_name, line);
+
+    $print ("Head: %d, Tail: %d, Free: %d\n",
+            self->head, self->tail, self->free);
+    $print ("Size: %d\nCapacity: %d\n", self->size, self->capacity);
+
+    // Output of the list element and their connections
+    $print ("\t prev \t value \t next\n");    
+    for (int elem_id = 0; elem_id < self->capacity; elem_id++)
+    {
+        $print ("%d:\t %d \t %d \t %d\n",
+                elem_id,
+                self->data[elem_id].prev,
+                self->data[elem_id].value,
+                self->data[elem_id].next);
+    }
+
+    $print ("\n--------------------------------------\n</hr>");
+
+    DrawList (self, log_file);
+}
+
+
+void DrawList (List* self, FILE* log_file)
 {
     #define _print(...) fprintf (dot_file, __VA_ARGS__)
 
@@ -317,8 +329,22 @@ void DumpList (List* self)
     // Filling the value of each node
     for (int i = 0; i < self->capacity; i++) 
     {
-        _print ( "node%d[shape=record, label=\" {real address: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
-                i, i, self->data[i].prev, self->data[i].value, self->data[i].next);
+        if (i == 0)
+        {
+            _print ("node%d[shape=record, style=\"filled\", fillcolor=\"grey\", label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
+                    i, i, "nill", "nill", "nill");
+        }
+        else if (self->data[i].value == POISON_NUM)
+        {
+            _print ("node%d[shape=record, style=\"filled\", fillcolor=\"blue\", label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
+                    i, i, "FREE", "POISON", "FREE");
+        }
+        else
+        {
+            _print ("node%d[shape=record, style=\"filled\", fillcolor=\"green\", label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
+                    i, i, self->data[i].prev, self->data[i].value, self->data[i].next);
+        }
+        
     }
 
     // Setting the same rank
@@ -347,16 +373,30 @@ void DumpList (List* self)
 
     for (int i = 1; i < self->capacity; i++) 
     {
-        _print ("node%d:p -> node%d \n", i, self->data[i].prev);
-        _print ("node%d:n -> node%d \n", i, self->data[i].next);
+        if (self->data[i].value == POISON_NUM && self->data[i].next != i)
+            _print ("node%d:n -> node%d \n", i, self->data[i].next);
+        else
+        {
+            _print ("node%d:p -> node%d \n", i, self->data[i].prev);
+            _print ("node%d:n -> node%d \n", i, self->data[i].next);
+        }
     }
-    
+
     _print ("}\n");
 
     #undef _print
-
     fclose (dot_file);
-    system ("dot -Tpng data/list.dot -o data/result.png");
+
+    // Executing dotfile and printing an image
+    char img_tag[MAX_IMG_SRC_LEN] = "";
+    char dot_cmd[MAX_IMG_SRC_LEN]  = "";
+    sprintf (img_tag, "<img src=\"../data/graph_%d.png\"> \n</pre>", DUMP_NUMBER);
+    sprintf (dot_cmd, "dot -Tpng data/list.dot -o data/graph_%d.png", DUMP_NUMBER);
+
+    system (dot_cmd);
+    $print (img_tag);
+
+    DUMP_NUMBER++;
 }
 
 void ListCtor (List* self, int capacity)
@@ -372,13 +412,13 @@ void ListCtor (List* self, int capacity)
     self->data[0].prev = 0;
 
     self->data[capacity - 1].next  = capacity - 1;
-    self->data[capacity - 1].value = -1;
+    self->data[capacity - 1].value = POISON_NUM;
     self->data[capacity - 1].prev  = capacity - 2;
 
     // Making connections with free elems
     for (int elem_id = 1; elem_id < capacity - 1; elem_id++)
     {
-        self->data[elem_id].value = -1;
+        self->data[elem_id].value = POISON_NUM;
         self->data[elem_id].next = elem_id + 1;
         self->data[elem_id].prev = elem_id - 1;
     }
