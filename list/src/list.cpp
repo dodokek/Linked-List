@@ -20,7 +20,7 @@ int main ()
     ListResize (&list, 12);
     ListDump (&list);
     ListInsertRight (&list, 300, 2);
-
+    ListDump (&list);
     DumpList (&list);
 
     fclose (log_file);
@@ -188,7 +188,7 @@ int HandleZeroSize (List* self, int new_elem_id)
 
 void ListResize (List* self, int new_capacity)
 {
-    if (new_capacity < self->capacity) printf ("Can't shrink the list, data may corrupt.\n");
+    if (new_capacity <= self->capacity) printf ("Can't shrink the list, data may corrupt.\n");
     
     // Allocating space for the new list
     node* new_data = (node*) calloc (new_capacity, sizeof (node));
@@ -214,12 +214,12 @@ void ListResize (List* self, int new_capacity)
         new_data[i].next = i + 1;
     }
 
-    new_data[new_capacity - 1].next = 0;
+    new_data[new_capacity - 1].next = new_capacity - 1;
     new_data[new_capacity - 1].prev = new_capacity - 2;
     
     // Rewriting list info
     self->capacity = new_capacity;
-    self->free = cur_elem_id;
+    self->free = self->size;
     self->head = 1;
     self->tail = self->size;
 
@@ -242,7 +242,6 @@ int GetRealPos (List* self, int id)
     {
         cur_elem_id = self->data[cur_elem_id].next;
     }
-
     return cur_elem_id;
 }
 
@@ -310,39 +309,48 @@ void DumpList (List* self)
         dpi      = 100
         compound  =  true;
         newrank   =  true;
-        rankdir   =  LR;
+        rankdir   =  TB;
 
     )";
     _print (header);
 
-
     // Filling the value of each node
     for (int i = 0; i < self->capacity; i++) 
     {
-        _print ( "node%d[shape=record, label=\" real address: %d | <p>prev: %d | value: %d | <n>next: %d\"] \n \n",
+        _print ( "node%d[shape=record, label=\" {real address: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
                 i, i, self->data[i].prev, self->data[i].value, self->data[i].next);
     }
 
-    // Making invisible connections
-    _print ("node0");
-    for (int i = 1; i < self->capacity; i++)
+    // Setting the same rank
+    _print ("{ rank = same; ");
+    for (int i = 0; i < self->capacity; i++) 
     {
-        _print ("->node%d", i);
+        _print ("node%d; ", i);
     }
-    _print ("[style=invis, weight=1, minlen=\"1.5\"]\n");
+    _print ("}\n");
 
     // Service data
     _print ("Free->node%d\n", self->free);
     _print ("Head->node%d\n", self->head);
     _print ("Tail->node%d\n", self->tail);
 
-    // Making connections
+    // Making invisible connections
+    _print ("edge[style=invis, constraint = true]\n");
+    _print ("node0");
+    for (int i = 1; i < self->capacity; i++)
+    {
+        _print ("->node%d", i);
+    }
+
+    // Making real connections
+    _print ("\n edge[style=solid, constraint = false]\n");
+
     for (int i = 1; i < self->capacity; i++) 
     {
         _print ("node%d:p -> node%d \n", i, self->data[i].prev);
         _print ("node%d:n -> node%d \n", i, self->data[i].next);
     }
-
+    
     _print ("}\n");
 
     #undef _print
@@ -363,7 +371,7 @@ void ListCtor (List* self, int capacity)
     self->data[0].next = 0;
     self->data[0].prev = 0;
 
-    self->data[capacity - 1].next  = 0;
+    self->data[capacity - 1].next  = capacity - 1;
     self->data[capacity - 1].value = -1;
     self->data[capacity - 1].prev  = capacity - 2;
 
