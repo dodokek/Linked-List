@@ -17,35 +17,7 @@
 
 #define FREE(x) free(x), x = nullptr
 
-#define ListDump(X) _ListDump(X, __FILE__, __PRETTY_FUNCTION__, __LINE__, log_file)
-
-#define $ListPushBack(ptr, val);               \
-    $print ("Pushing to tail value %d", val);  \
-    ListPushBack(ptr, val);
-
-#define $ListPushFront(ptr, val)               \
-    $print ("Pushing to front value %d", val); \
-    ListPushFront(ptr, val);
-
-#define $ListInsertRight(ptr, val, id)                  \
-    $print ("Inserting value %d after id %d", val, id); \
-    ListInsertRight(ptr, val, id)
-
-#define $ListInsertLeft(ptr, val, id)                    \
-    $print ("Inserting value %d before id %d", val, id); \
-    ListInsertLeft(ptr, val, id)
-
-#define $ListResize(ptr, val)                 \
-    $print ("Resizing list to size %d", val); \
-    ListResize(ptr, val);
-
-#define $ListPushFront(ptr, val)               \
-    $print ("Pushing to front value %d", val); \
-    ListPushFront(ptr, val);
-
-#define $ListLinearize(ptr)            \
-    $print ("Linearizing the list");   \
-    ListLinearize(ptr);
+#define ListDump(X, reason, ...) _ListDump(X, __FILE__, __PRETTY_FUNCTION__, __LINE__, log_file, reason, __VA_ARGS__)
 
 #define $print(...) fprintf (log_file, __VA_ARGS__)
 
@@ -129,7 +101,8 @@ void ListCtor (List* list, int capacity);
 
 void ListDtor (List* list);
 
-void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], const int line, FILE* log_file);
+void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], const int line, FILE* log_file, char* reason, ...);
 
 void DrawList (List* list, FILE* log_file);
+
 #endif

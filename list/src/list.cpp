@@ -7,33 +7,33 @@ int main ()
 {
     List list = {};
     FILE* log_file = get_file ("data/log.html", "w+");
-    $print ("<head><style>html {background-image: url('https://memepedia.ru/wp-content/uploads/2022/10/mudroe-tainstvennoe-derevo-mem-8.jpg');background-repeat: no-repeat;background-attachment: fixed;background-size: cover;}</style></head>\n");
+    //$print ("<head><style>html {background-image: url('https://memepedia.ru/wp-content/uploads/2022/10/mudroe-tainstvennoe-derevo-mem-8.jpg');background-repeat: no-repeat;background-attachment: fixed;background-size: cover;}</style></head>\n");
 
     ListCtor (&list, LIST_INITIAL_CAPACITY);
     ListDump (&list);
 
     // $ sign for printing additional info in log
 
-    $ListPushBack (&list, 10);
-    ListDump (&list);
+    ListPushBack (&list, 10);
+    ListDump (&list, "Print Kek %s", "bebra");
     
-    $ListPushBack (&list, 15);
-    ListDump (&list);
+    ListPushBack (&list, 15);
+    ListDump (&list, "Print Kek %s", "bebra");
     
-    $ListPushBack (&list, 20);
-    ListDump (&list);
+    ListPushBack (&list, 20);
+    ListDump (&list, "Print Kek %s", "bebra");
     
-    $ListInsertRight (&list, 99, 2);
-    ListDump (&list);
+    ListInsertRight (&list, 99, 2);
+    ListDump (&list, "Print Kek %s", "bebra");
     
-    $ListResize (&list, 12);
-    ListDump (&list);
+    ListResize (&list, 12);
+    ListDump (&list, "Print Kek %s", "bebra");
     
-    $ListInsertRight (&list, 300, 3);
-    ListDump (&list);
+    ListInsertRight (&list, 300, 3);
+    ListDump (&list, "Print Kek %s", "bebra");
     
-    $ListLinearize (&list);
-    ListDump (&list);
+    ListLinearize (&list);
+    ListDump (&list, "Print Kek %s", "bebra");
 
 
     fclose (log_file);
@@ -339,7 +339,7 @@ void ListVerificate (List* list, FILE* log_file)
 }
 
 
-void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], const int line, FILE* log_file)
+void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], const int line, FILE* log_file, char* reason, ...)
 {
     ListVerificate (list, log_file);
 
