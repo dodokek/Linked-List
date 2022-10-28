@@ -7,13 +7,13 @@ int main ()
 {
     List list = {};
     FILE* log_file = get_file ("data/log.html", "w+");
-    //$print ("<head><style>html {background-image: url('https://memepedia.ru/wp-content/uploads/2022/10/mudroe-tainstvennoe-derevo-mem-8.jpg');background-repeat: no-repeat;background-attachment: fixed;background-size: cover;}</style></head>\n");
+    $print ("<head><style>html {background-image: url('https://memepedia.ru/wp-content/uploads/2022/10/mudroe-tainstvennoe-derevo-mem-8.jpg');background-repeat: no-repeat;background-attachment: fixed;background-size: cover;}</style></head>\n");
 
     ListCtor (&list, LIST_INITIAL_CAPACITY);
     ListDump (&list);
 
     // $ sign for printing additional info in log
-    
+
     $ListPushBack (&list, 10);
     ListDump (&list);
     
@@ -186,9 +186,6 @@ int ListInsertLeft (List* list, elem_t value, int real_pos)
     
     return new_elem_id;
 }
-
-
-
 
 
 node* InitNewElem (List* list, int* new_elem_id, elem_t value)
