@@ -318,31 +318,53 @@ void DrawList (List* self, FILE* log_file)
     // Writing header info
     const char header[] = R"(
     digraph g {
-        dpi      = 100
+        dpi      = 100;
+        fontname = "Comic Sans MS";
+        fontsize = 20;
         compound  =  true;
         newrank   =  true;
         rankdir   =  TB;
+        edge [color = darkgrey, arrowhead = onormal, arrowsize = 1, penwidth = 1.2]
+        graph[fillcolor = lightgreen, ranksep = 1.3, nodesep = 0.5,
+        style = "rounded, filled",color = green, penwidth = 2]
 
     )";
     _print (header);
+    
+    //Info node
+    _print ("InfoNode[shape=record, color=\"red\", width=0.2, style=\"filled\", fillcolor=\"lightblue\", label=\" {Linear: %d | Size: %d | Capacity: %d}\"] \n \n",
+                    self->linear, self->size, self->capacity);
 
     // Filling the value of each node
     for (int i = 0; i < self->capacity; i++) 
     {
         if (i == 0)
         {
-            _print ("node%d[shape=record, style=\"filled\", fillcolor=\"grey\", label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
+            _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"grey\", label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
                     i, i, "nill", "nill", "nill");
         }
         else if (self->data[i].value == POISON_NUM)
         {
-            _print ("node%d[shape=record, style=\"filled\", fillcolor=\"blue\", label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
+            _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"blue\", label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
                     i, i, "FREE", "POISON", "FREE");
         }
         else
         {
-            _print ("node%d[shape=record, style=\"filled\", fillcolor=\"green\", label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
-                    i, i, self->data[i].prev, self->data[i].value, self->data[i].next);
+            if (i == self->head)
+            {
+                _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"darkgoldenrod3\", label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
+                        i, i, self->data[i].prev, self->data[i].value, self->data[i].next);
+            }
+            else if (i == self->tail)
+            {
+                _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"darkgoldenrod1\", label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
+                        i, i, self->data[i].prev, self->data[i].value, self->data[i].next);
+            }
+            else
+            {
+                _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"green\", label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
+                        i, i, self->data[i].prev, self->data[i].value, self->data[i].next);
+            }
         }
         
     }
@@ -375,10 +397,14 @@ void DrawList (List* self, FILE* log_file)
     {
         if (self->data[i].value == POISON_NUM && self->data[i].next != i)
             _print ("node%d:n -> node%d \n", i, self->data[i].next);
+
         else
         {
-            _print ("node%d:p -> node%d \n", i, self->data[i].prev);
-            _print ("node%d:n -> node%d \n", i, self->data[i].next);
+            if (self->data[i].prev != 0)
+                _print ("node%d:p -> node%d \n", i, self->data[i].prev);
+
+            if (self->data[i].next != 0)
+                _print ("node%d:n -> node%d \n", i, self->data[i].next);
         }
     }
 
