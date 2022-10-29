@@ -20,9 +20,9 @@ node3[shape=record, width=0.2, style="filled", fillcolor="green",label=" {id: 3 
  
 node4[shape=record, width=0.2, style="filled", fillcolor="green",label=" {id: 4 | <p>prev: 3 | value: 20 | <n>next: 5}"] 
  
-node5[shape=record, width=0.2, style="filled", fillcolor="green",label=" {id: 5 | <p>prev: 4 | value: 0 | <n>next: 6}"] 
+node5[shape=record, width=0.2, style="filled", fillcolor="green",label=" {id: 5 | <p>prev: 4 | value: 320 | <n>next: 6}"] 
  
-node6[shape=record, width=0.2, style="filled", fillcolor="darkgoldenrod1",label=" {id: 6 | <p>prev: 5 | value: 320 | <n>next: 7}"] 
+node6[shape=record, width=0.2, style="filled", fillcolor="darkgoldenrod1",label=" {id: 6 | <p>prev: 5 | value: 0 | <n>next: 7}"] 
  
 node7[shape=record, width=0.2, style="filled", fillcolor="blue",label=" {id: 7 | <p>prev: FREE | value: POISON | <n>next: FREE}"] 
  

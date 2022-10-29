@@ -83,24 +83,9 @@ int ListInsertLeft (List* list, elem_t value, int real_pos)
 {
     if (real_pos == list->head) return ListInsertHead (list, value);
 
-    // Finding free space
-    int new_elem_id = list->free;
-    list->free = list->data[list->free].next;
+    int left_neighbour_pos = list->data[real_pos].prev;
 
-    // Changing connections of neighbours
-    int left_neighbour_id = list->data[real_pos].prev;
-    list->data[left_neighbour_id].next = new_elem_id;
-    list->data[real_pos].prev = new_elem_id;
-    
-    // Writing inserted elem data
-    list->data[new_elem_id].value = value;
-    list->data[new_elem_id].next  = real_pos;
-    list->data[new_elem_id].prev  = left_neighbour_id;
-
-    list->linear = false;
-    list->size++;
-    
-    return new_elem_id;
+    return ListInsertRight (list, value, left_neighbour_pos);
 }
 
 
@@ -190,13 +175,13 @@ void ListResize (List* list, int new_capacity)
     // Rewriting every element in linear order
     int cur_elem_id = list->head;
 
-    for (int i = 1; i < list->size + 1; i++)
+    for (int i = 1; i < list->size; i++)
     {
         new_data[i] = list->data[cur_elem_id];
         cur_elem_id = list->data[cur_elem_id].next;
     }
 
-    for (int elem_id = list->size + 1; elem_id < new_capacity; elem_id++)
+    for (int elem_id = list->size; elem_id < new_capacity; elem_id++)
     {
         new_data[elem_id].value = POISON_NUM;
     }
@@ -207,16 +192,16 @@ void ListResize (List* list, int new_capacity)
         new_data[i].next = i + 1;
     }
 
-    new_data[list->size].next = 0;
+    new_data[list->size - 1].next = 0;
     new_data[new_capacity - 1].next = new_capacity - 1;
     new_data[new_capacity - 1].prev = new_capacity - 2;
     
     // Rewriting list info
     list->linear = true;
     list->capacity = new_capacity;
-    list->free = list->size + 1;
+    list->free = list->size;
     list->head = 1;
-    list->tail = list->size;
+    list->tail = list->size - 1;
 
     free (list->data);
     list->data = new_data;
@@ -260,10 +245,10 @@ void ListLinearize (List* list)
 
 int GetRealPos (List* list, int id)
 {
-    printf ("Why don't you just save the address, fucker?\n");
-
     if (id > list->size - 1) return -1;
     if (list->linear) return id;
+    
+    printf ("Why don't you just save the address, fucker?\n");
 
     int cur_elem_id = list->head;
 
@@ -280,7 +265,7 @@ void ListVerificate (List* list, FILE* log_file)
 {
     if (!list)
     { 
-        PutError (NULL_PTR, log_file); // Put??
+        PutError (NULL_PTR, log_file);
         return;
     }
 
@@ -345,6 +330,7 @@ void DrawList (List* list, FILE* log_file)
         style = "rounded, filled",color = green, penwidth = 2]
 
     )";
+    
     _print (header);
     
     //Info node
