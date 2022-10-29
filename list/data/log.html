@@ -1,188 +1,100 @@
+Constructing list with capacity 10
 <pre>
 
 --------------------------------------
-Call of function ListDump at int main(), line 13:
+Call of function ListDump at int main(), line 11:
 Head: 0, Tail: 0, Free: 1
 Size: 1
 Capacity: 10
-	 prev 	 value 	 next
-0:	 0 	 0 	 0
-1:	 0 	 781274 	 2
-2:	 1 	 781274 	 3
-3:	 2 	 781274 	 4
-4:	 3 	 781274 	 5
-5:	 4 	 781274 	 6
-6:	 5 	 781274 	 7
-7:	 6 	 781274 	 8
-8:	 7 	 781274 	 9
-9:	 8 	 781274 	 9
 
 --------------------------------------
 <img width="1400px" src="../data/graph_0.png"> 
 </pre>
 <hr>
-Pushing to tail value 10<pre>
+Pushing back to tail value 10
+<pre>
 
 --------------------------------------
-Call of function ListDump at int main(), line 18:
+Call of function ListDump at int main(), line 14:
 Head: 1, Tail: 1, Free: 2
 Size: 2
 Capacity: 10
-	 prev 	 value 	 next
-0:	 0 	 0 	 0
-1:	 0 	 10 	 0
-2:	 1 	 781274 	 3
-3:	 2 	 781274 	 4
-4:	 3 	 781274 	 5
-5:	 4 	 781274 	 6
-6:	 5 	 781274 	 7
-7:	 6 	 781274 	 8
-8:	 7 	 781274 	 9
-9:	 8 	 781274 	 9
 
 --------------------------------------
 <img width="1400px" src="../data/graph_1.png"> 
 </pre>
 <hr>
-Pushing to tail value 15<pre>
+Pushing back to tail value 15
+<pre>
 
 --------------------------------------
-Call of function ListDump at int main(), line 21:
+Call of function ListDump at int main(), line 17:
 Head: 1, Tail: 2, Free: 3
 Size: 3
 Capacity: 10
-	 prev 	 value 	 next
-0:	 0 	 0 	 0
-1:	 0 	 10 	 2
-2:	 1 	 15 	 0
-3:	 2 	 781274 	 4
-4:	 3 	 781274 	 5
-5:	 4 	 781274 	 6
-6:	 5 	 781274 	 7
-7:	 6 	 781274 	 8
-8:	 7 	 781274 	 9
-9:	 8 	 781274 	 9
 
 --------------------------------------
 <img width="1400px" src="../data/graph_2.png"> 
 </pre>
 <hr>
-Pushing to tail value 20<pre>
+Pushing back to tail value 20
+<pre>
 
 --------------------------------------
-Call of function ListDump at int main(), line 24:
+Call of function ListDump at int main(), line 20:
 Head: 1, Tail: 3, Free: 4
 Size: 4
 Capacity: 10
-	 prev 	 value 	 next
-0:	 0 	 0 	 0
-1:	 0 	 10 	 2
-2:	 1 	 15 	 3
-3:	 2 	 20 	 0
-4:	 3 	 781274 	 5
-5:	 4 	 781274 	 6
-6:	 5 	 781274 	 7
-7:	 6 	 781274 	 8
-8:	 7 	 781274 	 9
-9:	 8 	 781274 	 9
 
 --------------------------------------
 <img width="1400px" src="../data/graph_3.png"> 
 </pre>
 <hr>
-Inserting value 99 after id 2<pre>
+Inserting value 99 to real address 2
+<pre>
 
 --------------------------------------
-Call of function ListDump at int main(), line 27:
+Call of function ListDump at int main(), line 23:
 Head: 1, Tail: 3, Free: 5
 Size: 5
 Capacity: 10
-	 prev 	 value 	 next
-0:	 0 	 0 	 0
-1:	 0 	 10 	 2
-2:	 1 	 15 	 4
-3:	 4 	 20 	 0
-4:	 2 	 99 	 3
-5:	 4 	 781274 	 6
-6:	 5 	 781274 	 7
-7:	 6 	 781274 	 8
-8:	 7 	 781274 	 9
-9:	 8 	 781274 	 9
 
 --------------------------------------
 <img width="1400px" src="../data/graph_4.png"> 
 </pre>
 <hr>
-Resizing list to size 12<pre>
+Resing list, new capacity 12<pre>
 
 --------------------------------------
-Call of function ListDump at int main(), line 30:
+Call of function ListDump at int main(), line 26:
 Head: 1, Tail: 5, Free: 6
 Size: 5
 Capacity: 12
-	 prev 	 value 	 next
-0:	 0 	 0 	 0
-1:	 0 	 10 	 2
-2:	 1 	 15 	 3
-3:	 2 	 99 	 4
-4:	 3 	 20 	 5
-5:	 4 	 0 	 0
-6:	 5 	 781274 	 7
-7:	 6 	 781274 	 8
-8:	 7 	 781274 	 9
-9:	 8 	 781274 	 10
-10:	 9 	 781274 	 11
-11:	 10 	 781274 	 11
 
 --------------------------------------
 <img width="1400px" src="../data/graph_5.png"> 
 </pre>
 <hr>
-Inserting value 300 after id 3<pre>
+Pushing back to tail value 320
+<pre>
 
 --------------------------------------
-Call of function ListDump at int main(), line 33:
-Head: 1, Tail: 5, Free: 7
+Call of function ListDump at int main(), line 29:
+Head: 1, Tail: 6, Free: 7
 Size: 6
 Capacity: 12
-	 prev 	 value 	 next
-0:	 0 	 0 	 0
-1:	 0 	 10 	 2
-2:	 1 	 15 	 3
-3:	 2 	 99 	 6
-4:	 6 	 20 	 5
-5:	 4 	 0 	 0
-6:	 3 	 300 	 4
-7:	 6 	 781274 	 8
-8:	 7 	 781274 	 9
-9:	 8 	 781274 	 10
-10:	 9 	 781274 	 11
-11:	 10 	 781274 	 11
 
 --------------------------------------
 <img width="1400px" src="../data/graph_6.png"> 
 </pre>
 <hr>
-Linearizing the list<pre>
+Linearizing list<pre>
 
 --------------------------------------
-Call of function ListDump at int main(), line 36:
+Call of function ListDump at int main(), line 32:
 Head: 1, Tail: 6, Free: 7
 Size: 6
 Capacity: 12
-	 prev 	 value 	 next
-0:	 0 	 0 	 0
-1:	 0 	 10 	 2
-2:	 1 	 15 	 3
-3:	 2 	 99 	 4
-4:	 3 	 300 	 5
-5:	 4 	 300 	 6
-6:	 5 	 300 	 7
-7:	 6 	 781274 	 8
-8:	 7 	 781274 	 9
-9:	 8 	 781274 	 10
-10:	 9 	 781274 	 11
-11:	 10 	 781274 	 11
 
 --------------------------------------
 <img width="1400px" src="../data/graph_7.png"> 

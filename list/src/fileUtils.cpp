@@ -1,5 +1,5 @@
 
-#include "../include/fileUtils.h"
+#include "fileUtils.h"
 //-----------------------------------------------------------------------------
 
 FILE* get_file (const char file_name[], const char* mode)

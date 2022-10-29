@@ -1,49 +1,137 @@
 
 #include "list.h"
 
-static int DUMP_NUMBER = 0;
-
-int main ()
+int ListInsertHead (List* list, elem_t value)
 {
-    List list = {};
-    FILE* log_file = get_file ("data/log.html", "w+");
-    //$print ("<head><style>html {background-image: url('https://memepedia.ru/wp-content/uploads/2022/10/mudroe-tainstvennoe-derevo-mem-8.jpg');background-repeat: no-repeat;background-attachment: fixed;background-size: cover;}</style></head>\n");
+    assert (list);
 
-    ListCtor (&list, LIST_INITIAL_CAPACITY);
-    ListDump (&list);
+    if (list->size == list->capacity)
+    {
+        printf ("\nList is full, fucking fuck!\n\n");
+        return 0;
+    }
 
-    // $ sign for printing additional info in log
-<<<<<<< Updated upstream
+    // Finding free space, inserting new elem there.
+    int new_elem_id = 0;
+    node* new_elem = InitNewElem (list, &new_elem_id, value);
 
-    ListPushBack (&list, 10);
-    ListDump (&list, "Print Kek %s", "bebra");
-=======
+    // Size = 0 case
+    if (HandleZeroSize (list, new_elem_id)) return new_elem_id;
     
-    $ListPushBack (&list, 10);
-    ListDump (&list);
->>>>>>> Stashed changes
-    
-    ListPushBack (&list, 15);
-    ListDump (&list, "Print Kek %s", "bebra");
-    
-    ListPushBack (&list, 20);
-    ListDump (&list, "Print Kek %s", "bebra");
-    
-    ListInsertRight (&list, 99, 2);
-    ListDump (&list, "Print Kek %s", "bebra");
-    
-    ListResize (&list, 12);
-    ListDump (&list, "Print Kek %s", "bebra");
-    
-    ListInsertRight (&list, 300, 3);
-    ListDump (&list, "Print Kek %s", "bebra");
-    
-    ListLinearize (&list);
-    ListDump (&list, "Print Kek %s", "bebra");
+    // Size != 0
+    printf ("Inserting to head\n");
+    new_elem->next = list->head;
+    list->data[list->head].prev = new_elem_id;
+    list->head = new_elem_id;
+
+    list->size++;
+    list->linear = false;
+
+    return new_elem_id;
+}
 
 
-    fclose (log_file);
-    ListDtor (&list);
+int ListInsertTail (List* list, elem_t value)
+{
+    assert (list);
+
+    // Finding free space, inserting new elem there.
+    int new_elem_id = 0;
+    node* new_elem = InitNewElem (list, &new_elem_id, value);
+
+    // Size = 0 case
+    if (HandleZeroSize (list, new_elem_id)) return new_elem_id;
+    
+    // Size != 0
+    printf ("Inserting to tail\n");
+    new_elem->prev = list->tail;
+    list->data[list->tail].next = new_elem_id;
+    list->tail = new_elem_id;
+
+    list->size++;
+
+    return new_elem_id;
+}
+
+
+int ListInsertRight (List* list, elem_t value, int real_pos)
+{
+    if (real_pos == list->tail) return ListInsertTail (list, value);
+    
+    // Finding free space
+    int new_elem_id = list->free;
+    list->free = list->data[list->free].next;
+
+    // Changing connections of neighbours
+    int right_neighbour_id = list->data[real_pos].next;
+    list->data[right_neighbour_id].prev = new_elem_id;
+    list->data[real_pos].next = new_elem_id;
+    
+    // Writing inserted elem data
+    list->data[new_elem_id].value = value;
+    list->data[new_elem_id].prev  = real_pos;
+    list->data[new_elem_id].next  = right_neighbour_id;
+
+    list->linear = false;
+    list->size++;
+    
+    return new_elem_id;
+}
+
+
+int ListInsertLeft (List* list, elem_t value, int real_pos)
+{
+    if (real_pos == list->head) return ListInsertHead (list, value);
+
+    // Finding free space
+    int new_elem_id = list->free;
+    list->free = list->data[list->free].next;
+
+    // Changing connections of neighbours
+    int left_neighbour_id = list->data[real_pos].prev;
+    list->data[left_neighbour_id].next = new_elem_id;
+    list->data[real_pos].prev = new_elem_id;
+    
+    // Writing inserted elem data
+    list->data[new_elem_id].value = value;
+    list->data[new_elem_id].next  = real_pos;
+    list->data[new_elem_id].prev  = left_neighbour_id;
+
+    list->linear = false;
+    list->size++;
+    
+    return new_elem_id;
+}
+
+
+node* InitNewElem (List* list, int* new_elem_id, elem_t value)
+{
+    // Finding free space
+    *new_elem_id = list->free;
+    node* new_elem = list->data + *new_elem_id;
+    list->free = list->data[list->free].next;
+
+    // Giving default values to node
+    new_elem->value = value;
+    new_elem->next  = 0;
+    new_elem->prev  = 0;  
+
+    return new_elem;
+}
+
+
+int HandleZeroSize (List* list, int new_elem_id)
+{
+    if (list->size == LIST_INITIAL_SIZE)
+    {
+        list->head = new_elem_id;
+        list->tail = new_elem_id;
+        list->size++;
+
+        return 1;
+    }
+
+    return 0;
 }
 
 
@@ -91,153 +179,20 @@ int ListDelete (List* list, int elem_id)
 }
 
 
-int ListPushFront (List* list, elem_t value)
-{
-    assert (list);
-
-    if (list->size == list->capacity)
-    {
-        printf ("\nList is full, fucking fuck!\n\n");
-        return 0;
-    }
-
-    // Finding free space, inserting new elem there.
-    int new_elem_id = 0;
-    node* new_elem = InitNewElem (list, &new_elem_id, value);
-
-    // Size = 0 case
-    if (HandleZeroSize (list, new_elem_id)) return new_elem_id;
-    
-    // Size != 0
-    printf ("Inserting to head\n");
-    new_elem->next = list->head;
-    list->data[list->head].prev = new_elem_id;
-    list->head = new_elem_id;
-
-    list->size++;
-    list->linear = false;
-
-    return new_elem_id;
-}
-
-
-int ListPushBack (List* list, elem_t value)
-{
-    assert (list);
-
-    // Finding free space, inserting new elem there.
-    int new_elem_id = 0;
-    node* new_elem = InitNewElem (list, &new_elem_id, value);
-
-    // Size = 0 case
-    if (HandleZeroSize (list, new_elem_id)) return new_elem_id;
-    
-    // Size != 0
-    printf ("Inserting to tail\n");
-    new_elem->prev = list->tail;
-    list->data[list->tail].next = new_elem_id;
-    list->tail = new_elem_id;
-
-    list->size++;
-
-    return new_elem_id;
-}
-
-
-int ListInsertRight (List* list, elem_t value, int real_pos)
-{
-    if (real_pos == list->tail) return ListPushBack (list, value);
-    
-    // Finding free space
-    int new_elem_id = list->free;
-    list->free = list->data[list->free].next;
-
-    // Changing connections of neighbours
-    int right_neighbour_id = list->data[real_pos].next;
-    list->data[right_neighbour_id].prev = new_elem_id;
-    list->data[real_pos].next = new_elem_id;
-    
-    // Writing inserted elem data
-    list->data[new_elem_id].value = value;
-    list->data[new_elem_id].prev  = real_pos;
-    list->data[new_elem_id].next  = right_neighbour_id;
-
-    list->linear = false;
-    list->size++;
-    
-    return new_elem_id;
-}
-
-
-int ListInsertLeft (List* list, elem_t value, int real_pos)
-{
-    if (real_pos == list->head) return ListPushFront (list, value);
-
-    // Finding free space
-    int new_elem_id = list->free;
-    list->free = list->data[list->free].next;
-
-    // Changing connections of neighbours
-    int left_neighbour_id = list->data[real_pos].prev;
-    list->data[left_neighbour_id].next = new_elem_id;
-    list->data[real_pos].prev = new_elem_id;
-    
-    // Writing inserted elem data
-    list->data[new_elem_id].value = value;
-    list->data[new_elem_id].next  = real_pos;
-    list->data[new_elem_id].prev  = left_neighbour_id;
-
-    list->linear = false;
-    list->size++;
-    
-    return new_elem_id;
-}
-
-
-node* InitNewElem (List* list, int* new_elem_id, elem_t value)
-{
-    // Finding free space
-    *new_elem_id = list->free;
-    node* new_elem = list->data + *new_elem_id;
-    list->free = list->data[list->free].next;
-
-    // Giving default values to node
-    new_elem->value = value;
-    new_elem->next  = 0;
-    new_elem->prev  = 0;  
-
-    return new_elem;
-}
-
-
-int HandleZeroSize (List* list, int new_elem_id)
-{
-    if (list->size == LIST_INITIAL_SIZE)
-    {
-        list->head = new_elem_id;
-        list->tail = new_elem_id;
-        list->size++;
-        return 1;
-    }
-
-    return 0;
-}
-
-
 void ListResize (List* list, int new_capacity)
 {
     if (new_capacity <= list->capacity) printf ("Can't shrink the list, data may corrupt.\n");
     
     // Allocating space for the new list
     node* new_data = (node*) calloc (new_capacity, sizeof (node));
-    assert (new_data);
+    assert (new_data != NULL);
     
     // Rewriting every element in linear order
     int cur_elem_id = list->head;
 
     for (int i = 1; i < list->size + 1; i++)
     {
-        *(new_data + i) = list->data[cur_elem_id];
+        new_data[i] = list->data[cur_elem_id];
         cur_elem_id = list->data[cur_elem_id].next;
     }
 
@@ -270,7 +225,6 @@ void ListResize (List* list, int new_capacity)
 }
 
 
-// He he
 void ListLinearize (List* list)
 {
     // Rewriting every element in linear order
@@ -278,7 +232,7 @@ void ListLinearize (List* list)
 
     for (int i = 1; i < list->size + 1; i++)
     {
-        *(list->data + i) = list->data[cur_elem_id];
+        list->data[i] = list->data[cur_elem_id];
         cur_elem_id = list->data[cur_elem_id].next;
     }
 
@@ -317,6 +271,7 @@ int GetRealPos (List* list, int id)
     {
         cur_elem_id = list->data[cur_elem_id].next;
     }
+
     return cur_elem_id;
 }
 
@@ -325,7 +280,7 @@ void ListVerificate (List* list, FILE* log_file)
 {
     if (!list)
     { 
-        PutError (NULL_PTR, log_file);
+        PutError (NULL_PTR, log_file); // Put??
         return;
     }
 
@@ -345,40 +300,36 @@ void ListVerificate (List* list, FILE* log_file)
 }
 
 
-void _ListDump (List* list, const char* /*filename[]*/, const char func_name[], const int line, FILE* log_file, char* reason, ...)
+void _ListDump (List* list, const char* /* filename[] */, const char func_name[],
+                const int line, FILE* log_file, char* reason, ...)
 {
     ListVerificate (list, log_file);
 
-    $print ("<pre>\n");
-
-    $print ("\n--------------------------------------\n");
+    va_list args;
+    va_start (args, reason);
+    vfprintf (log_file, reason, args);
     
+    $print ("<pre>\n");
+    $print ("\n--------------------------------------\n");
     $print ("Call of function ListDump at %s, line %d:\n", func_name, line);
 
     $print ("Head: %d, Tail: %d, Free: %d\n",
             list->head, list->tail, list->free);
-    $print ("Size: %d\nCapacity: %d\n", list->size, list->capacity);
 
-    // Output of the list element and their connections
-    $print ("\t prev \t value \t next\n");    
-    for (int elem_id = 0; elem_id < list->capacity; elem_id++)
-    {
-        $print ("%d:\t %d \t %d \t %d\n",
-                elem_id,
-                list->data[elem_id].prev,
-                list->data[elem_id].value,
-                list->data[elem_id].next);
-    }
+    $print ("Size: %d\nCapacity: %d\n", list->size, list->capacity);
 
     $print ("\n--------------------------------------\n");
 
     DrawList (list, log_file);
+    va_end (args);
 }
 
 
+#define _print(...) fprintf (dot_file, __VA_ARGS__)
+
 void DrawList (List* list, FILE* log_file)
 {
-    #define _print(...) fprintf (dot_file, __VA_ARGS__)
+    static int DUMP_NUMBER = 0;
 
     FILE* dot_file = get_file ("data/list.dot", "w+");
     
@@ -397,37 +348,43 @@ void DrawList (List* list, FILE* log_file)
     _print (header);
     
     //Info node
-    _print ("InfoNode[shape=record, color=\"red\", width=0.2, style=\"filled\", fillcolor=\"lightblue\", label=\" {Linear: %d | Size: %d | Capacity: %d}\"] \n \n",
-                    list->linear, list->size, list->capacity);
+    _print ("InfoNode[shape=record, color=\"red\", width=0.2, style=\"filled\","
+            "fillcolor=\"lightblue\", label=\" {Linear: %d | Size: %d | Capacity: %d}\"] \n \n",
+            list->linear, list->size, list->capacity);
 
     // Filling the value of each node
     for (int i = 0; i < list->capacity; i++) 
     {
         if (i == 0)
         {
-            _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"grey\", label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
+            _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"grey\","
+                    "label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
                     i, i, "nill", "nill", "nill");
         }
         else if (list->data[i].value == POISON_NUM)
         {
-            _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"blue\", label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
+            _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"blue\","
+                    "label=\" {id: %d | <p>prev: %s | value: %s | <n>next: %s}\"] \n \n",
                     i, i, "FREE", "POISON", "FREE");
         }
         else
         {
             if (i == list->head)
             {
-                _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"darkgoldenrod3\", label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
+                _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"darkgoldenrod3\","
+                        "label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
                         i, i, list->data[i].prev, list->data[i].value, list->data[i].next);
             }
             else if (i == list->tail)
             {
-                _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"darkgoldenrod1\", label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
+                _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"darkgoldenrod1\","
+                        "label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
                         i, i, list->data[i].prev, list->data[i].value, list->data[i].next);
             }
             else
             {
-                _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"green\", label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
+                _print ("node%d[shape=record, width=0.2, style=\"filled\", fillcolor=\"green\","
+                        "label=\" {id: %d | <p>prev: %d | value: %d | <n>next: %d}\"] \n \n",
                         i, i, list->data[i].prev, list->data[i].value, list->data[i].next);
             }
         }
@@ -460,9 +417,10 @@ void DrawList (List* list, FILE* log_file)
 
     for (int i = 1; i < list->capacity; i++) 
     {
-        if (list->data[i].value == POISON_NUM && list->data[i].next != i)
+        if (list->data[i].value == POISON_NUM && list->data[i].next != i && i != list->capacity - 1)
+        {
             _print ("node%d:n -> node%d \n", i, list->data[i].next);
-
+        }
         else
         {
             if (list->data[i].prev != 0)
@@ -474,8 +432,7 @@ void DrawList (List* list, FILE* log_file)
     }
 
     _print ("}\n");
-
-    #undef _print
+    
     fclose (dot_file);
 
     // Executing dotfile and printing an image
@@ -491,11 +448,14 @@ void DrawList (List* list, FILE* log_file)
     DUMP_NUMBER++;
 }
 
+#undef _print
+
 void ListCtor (List* list, int capacity)
 {
     // Initializing the array of elems
     list->data = (node*) calloc (capacity, sizeof(node));
-    assert (list->data);
+    assert (list->data != NULL);
+
     list->size = LIST_INITIAL_SIZE; // 0 at the end of list
     list->capacity = capacity;
 

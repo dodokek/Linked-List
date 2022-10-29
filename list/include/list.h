@@ -8,6 +8,7 @@
 #include <malloc.h>
 #include <assert.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 #include "config.h"
 #include "error_handler.h"
@@ -75,9 +76,9 @@ struct List
     bool linear;
 };
 
-int ListPushBack (List* list, elem_t value);
+int ListInsertTail (List* list, elem_t value);
 
-int ListPushFront (List* list, elem_t value);
+int ListInsertHead (List* list, elem_t value);
 
 node* InitNewElem (List* list, int* new_elem_id, elem_t value);
 
