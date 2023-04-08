@@ -7,7 +7,7 @@ int ListInsertHead (List* list, elem_t value)
 
     if (list->size == list->capacity)
     {
-        printf ("\nList is full, fucking fuck!\n\n");
+        printf ("\nList is full!\n\n");
         return 0;
     }
 
@@ -43,7 +43,7 @@ int ListInsertTail (List* list, elem_t value)
     if (HandleZeroSize (list, new_elem_id)) return new_elem_id;
     
     // Size != 0
-    printf ("Inserting to tail\n");
+    // printf ("Inserting to tail\n");
     new_elem->prev = list->tail;
     list->data[list->tail].next = new_elem_id;
     list->tail = new_elem_id;
@@ -248,7 +248,7 @@ int GetRealPos (List* list, int id)
     if (id > list->size - 1) return -1;
     if (list->linear) return id;
     
-    printf ("Why don't you just save the address, fucker?\n");
+    // printf ("Why don't you just save the address?\n");
 
     int cur_elem_id = list->head;
 
